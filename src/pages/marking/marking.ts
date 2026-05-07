@@ -447,7 +447,8 @@ private latestPreviewRequestId = 0;
     }
 
     const engravePayload = {
-      parameters: [modelNo, vinNo, engineSrNo]
+      parameters: [modelNo, vinNo, engineSrNo],
+      isReengrave: false
     };
 
     const printPayload = {
