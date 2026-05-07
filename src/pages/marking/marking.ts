@@ -541,8 +541,21 @@ private latestPreviewRequestId = 0;
   }
 
   private loadCountryImage(countryName: string) {
+    const normalizedCountryName = (countryName || '').toUpperCase().trim();
+
+    if (normalizedCountryName && normalizedCountryName !== 'INDIA') {
+      this.countryFlag = null;
+      this.cdr.markForCheck();
+      this.snackBar.open('This region number plate image cannot found', 'Close', {
+        duration: 5000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center'
+      });
+      return;
+    }
+
     // Get image name from mapping
-    const imageName = this.countryImageMap[countryName] || countryName;
+    const imageName = this.countryImageMap[normalizedCountryName] || normalizedCountryName;
 
     // Check if image is jpeg or svg
     // const extension = imageName === 'INDIA' ? '.jpeg' : '.svg';
