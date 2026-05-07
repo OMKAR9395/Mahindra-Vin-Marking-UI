@@ -10,7 +10,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
   styleUrl: './image-preview-dialog.scss',
 })
 export class ImagePreviewDialog {
-constructor(
+  constructor(
     public dialogRef: MatDialogRef<ImagePreviewDialog>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private sanitizer: DomSanitizer

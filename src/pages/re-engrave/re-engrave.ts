@@ -273,7 +273,9 @@ private latestPreviewRequestId = 0;
     }
 
     const dialogRef = this.dialog.open(ImagePreviewDialog, {
-      width: '400px',
+      width: '800px',
+      minWidth: '800px',
+      maxWidth: '800px',
       data: { imageBase64 }
     });
 

@@ -270,22 +270,39 @@ private latestPreviewRequestId = 0;
     });
   }
 
+  private openPreviewDialog(imageBase64: string) {
+    if (this.activeDialogRef) {
+      this.activeDialogRef.close();
+    }
+
+    const dialogRef = this.dialog.open(ImagePreviewDialog, {
+      width: '800px',
+      minWidth: '800px',
+      maxWidth: '800px',
+      data: { imageBase64 }
+    });
+
+    this.activeDialogRef = dialogRef;
+
+    dialogRef.afterClosed().subscribe(() => {
+      if (this.activeDialogRef === dialogRef) {
+        this.activeDialogRef = null;
+      }
+    });
+  }
+
   // Show image popup with OK/Cancel buttons
   private showImagePopup(
     imageBase64: string,
     modelNumber: string,
     combinedData?: { vinNumber: string; color: string | null; qrData: string }
   ) {
-    if (this.activeDialogRef) {
-      this.activeDialogRef.close();
+    this.openPreviewDialog(imageBase64);
+    const dialogRef = this.activeDialogRef;
+
+    if (!dialogRef) {
+      return;
     }
-
-    const dialogRef = this.dialog.open(ImagePreviewDialog, {
-      width: '400px',
-      data: { imageBase64 }
-    });
-
-    this.activeDialogRef = dialogRef;
 
     dialogRef.afterClosed().subscribe((result) => {
       if (this.activeDialogRef === dialogRef) {
