@@ -85,7 +85,7 @@ export class DashboardApi {
       ),
     }).pipe(
       map(({ liveTracking, productionSummary }) => ({
-        title: 'Live Dashboard',
+        title: 'Live DASHBOARD',
         generatedAt: new Date().toISOString(),
         vehicleRows: (liveTracking.data ?? []).map(row => this.mapLiveTrackingRow(row)),
         summaryRows: (productionSummary.data ?? []).map(row => this.mapSummaryRow(row)),
@@ -94,7 +94,7 @@ export class DashboardApi {
         console.error('Failed to fetch dashboard data', error);
 
         return of({
-          title: 'Live Dashboard',
+          title: 'Live DASHBOARD',
           generatedAt: new Date().toISOString(),
           vehicleRows: [],
           summaryRows: [],
