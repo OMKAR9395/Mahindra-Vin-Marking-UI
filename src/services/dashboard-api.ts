@@ -77,11 +77,13 @@ export class DashboardApi {
 
   getDashboardData(): Observable<DashboardResponse> {
     return forkJoin({
-      liveTracking: this.http.get<ApiResponse<LiveTrackingApiRow>>(
+      liveTracking: this.http.post<ApiResponse<LiveTrackingApiRow>>(
         `${this.productionUrl}/live-tracking`,
+        {},
       ),
-      productionSummary: this.http.get<ApiResponse<ProductionSummaryApiRow>>(
+      productionSummary: this.http.post<ApiResponse<ProductionSummaryApiRow>>(
         `${this.productionUrl}/production-summary`,
+        {},
       ),
     }).pipe(
       map(({ liveTracking, productionSummary }) => ({
