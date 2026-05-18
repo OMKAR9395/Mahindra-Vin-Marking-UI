@@ -4,6 +4,26 @@
       <h1>{{ dashboard.title }}</h1>
     </div>
 
+    <section class="panel details-panel">
+      <div class="panel-title">Live Tracking</div>
+      <div class="table-scroll details-scroll">
+        <table class="dashboard-table detail-table">
+          <thead>
+            <tr>
+              <th *ngFor="let column of detailColumns">{{ column.label }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of dashboard.vehicleRows; trackBy: trackVehicleRow">
+              <td *ngFor="let column of detailColumns">
+                {{ row[column.key] }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <section class="panel">
       <div class="panel-title">Production Summary</div>
       <div class="table-scroll summary-scroll">
@@ -16,26 +36,6 @@
           <tbody>
             <tr *ngFor="let row of dashboard.summaryRows; trackBy: trackSummaryRow">
               <td *ngFor="let column of summaryColumns">
-                {{ row[column.key] }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="panel details-panel">
-      <div class="panel-title">Vehicle Details</div>
-      <div class="table-scroll details-scroll">
-        <table class="dashboard-table detail-table">
-          <thead>
-            <tr>
-              <th *ngFor="let column of detailColumns">{{ column.label }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of dashboard.vehicleRows; trackBy: trackVehicleRow">
-              <td *ngFor="let column of detailColumns">
                 {{ row[column.key] }}
               </td>
             </tr>
