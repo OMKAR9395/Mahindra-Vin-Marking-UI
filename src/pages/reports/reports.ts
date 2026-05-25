@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import * as XLSX from 'xlsx-js-style';
 import { TableConvertLoader } from '../../loaders/table-convert-loader/table-convert-loader';
 import {
   ProductionDataReportApi,
@@ -127,17 +128,15 @@ export class Reports {
     await this.waitForLoaderPaint();
 
     try {
-      const XLSX = await import('xlsx-js-style');
       const worksheet = this.buildStyledReportWorksheet(XLSX);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'ProductionReport');
 
       const stamp = new Date().toISOString().slice(0, 10);
-      XLSX.writeFile(workbook, `production-data-report-${stamp}.xlsx`, {
-        compression: true,
-      });
+      this.saveWorkbook(workbook, `production-data-report-${stamp}.xlsx`);
       this.showSnack('Report downloaded successfully.', true);
-    } catch {
+    } catch (error) {
+      console.error('Unable to download production report.', error);
       this.showSnack('Unable to download report.', false);
     } finally {
       this.stopLoading();
@@ -443,12 +442,41 @@ export class Reports {
     });
   }
 
-  private buildStyledReportWorksheet(XLSX: typeof import('xlsx-js-style')) {
+  private saveWorkbook(workbook: XLSX.WorkBook, fileName: string): void {
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+      compression: true,
+    });
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    const legacyNavigator = navigator as Navigator & {
+      msSaveOrOpenBlob?: (blob: Blob, defaultName?: string) => boolean;
+    };
+    if (legacyNavigator.msSaveOrOpenBlob) {
+      legacyNavigator.msSaveOrOpenBlob(blob, fileName);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = objectUrl;
+    link.download = fileName;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+  }
+
+  private buildStyledReportWorksheet(workbookUtils: typeof XLSX) {
     const headers = this.displayedColumns.map((column) => this.headerLabel(column));
     const dataRows = this.filteredRecords.map((record) =>
       this.displayedColumns.map((column) => this.exportCell(column, record)),
     );
-    const worksheet = XLSX.utils.aoa_to_sheet([headers, ...dataRows]);
+    const worksheet = workbookUtils.utils.aoa_to_sheet([headers, ...dataRows]);
 
     const columnWidths = this.displayedColumns.map((column, index) =>
       this.measureColumnWidth(headers[index], dataRows, index),
@@ -458,7 +486,7 @@ export class Reports {
 
     if (headers.length > 0) {
       worksheet['!autofilter'] = {
-        ref: XLSX.utils.encode_range({
+        ref: workbookUtils.utils.encode_range({
           s: { r: 0, c: 0 },
           e: { r: Math.max(dataRows.length, 1), c: headers.length - 1 },
         }),
@@ -488,13 +516,13 @@ export class Reports {
     };
 
     for (let columnIndex = 0; columnIndex < headers.length; columnIndex++) {
-      const headerCell = XLSX.utils.encode_cell({ r: 0, c: columnIndex });
+      const headerCell = workbookUtils.utils.encode_cell({ r: 0, c: columnIndex });
       if (worksheet[headerCell]) {
         worksheet[headerCell].s = headerStyle;
       }
 
       for (let rowIndex = 0; rowIndex < dataRows.length; rowIndex++) {
-        const cellAddress = XLSX.utils.encode_cell({ r: rowIndex + 1, c: columnIndex });
+        const cellAddress = workbookUtils.utils.encode_cell({ r: rowIndex + 1, c: columnIndex });
         if (worksheet[cellAddress]) {
           worksheet[cellAddress].s = bodyStyle;
         }
