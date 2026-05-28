@@ -491,6 +491,11 @@ private latestPreviewRequestId = 0;
               verticalPosition: 'top',
               horizontalPosition: 'center'
             });
+            if (typeof BroadcastChannel !== 'undefined') {
+              const channel = new BroadcastChannel('mahindra-dashboard');
+              channel.postMessage({ type: 'refresh-dashboard' });
+              channel.close();
+            }
           }),
           catchError((addError) => {
             const addMessage =

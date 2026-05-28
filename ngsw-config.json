@@ -21,6 +21,7 @@
       "resources": {
         "files": [
           "/manifest.webmanifest",
+          "/dashboard-manifest.webmanifest",
           "/assets/**",
           "/icons/**"
         ]

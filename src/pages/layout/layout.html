@@ -10,9 +10,9 @@
         <a
           class="nav-link"
           *ngFor="let item of visibleNavItems; trackBy: trackByNavPath"
-          [routerLink]="[item.path]"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }">
+          href=""
+          [class.active]="isNavActive(item.path)"
+          (click)="onNavClick($event, item)">
           <div class="nav-item-content">
             @if (item.path === '/app/dashboard') {
               <div class="nav-dashboard-logo" aria-hidden="true">

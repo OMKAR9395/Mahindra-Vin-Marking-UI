@@ -5,6 +5,13 @@ import { roleRouteGuard } from './role-route.guard';
 
 export const routes: Routes = [
  { path: 'login', component: Login },
+ {
+   path: 'dashboard-window',
+   canActivate: [roleRouteGuard],
+   data: { roles: ['Admin', 'Operator'] },
+   loadComponent: () =>
+     import('../pages/dashboard/dashboard').then(m => m.Dashboard),
+ },
 
   // Layout shell after login
   {

@@ -6,9 +6,16 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0057D9">
-  <link rel="icon" type="image/png" href="icons/icon-192x192-blue.png">
   <script>
     (function () {
+      var isDashboardWindow = window.location.pathname.indexOf('/dashboard-window') === 0;
+
+      var icon = document.createElement('link');
+      icon.rel = 'icon';
+      icon.type = 'image/png';
+      icon.href = isDashboardWindow ? 'icons/dashboard-icon.png' : 'icons/icon-192x192-blue.png';
+      document.head.appendChild(icon);
+
       var ua = navigator.userAgent.toLowerCase();
       var isMobileUa =
         /android|iphone|ipad|ipod|windows phone|mobile|blackberry|opera mini/i.test(ua);
@@ -18,12 +25,12 @@
 
       var manifest = document.createElement('link');
       manifest.rel = 'manifest';
-      manifest.href = 'manifest.webmanifest';
+      manifest.href = isDashboardWindow ? 'dashboard-manifest.webmanifest' : 'manifest.webmanifest';
       document.head.appendChild(manifest);
 
       var appleTouch = document.createElement('link');
       appleTouch.rel = 'apple-touch-icon';
-      appleTouch.href = 'icons/apple-touch-icon-blue.png';
+      appleTouch.href = isDashboardWindow ? 'icons/dashboard-icon.png' : 'icons/apple-touch-icon-blue.png';
       document.head.appendChild(appleTouch);
 
       var mobileCapable = document.createElement('meta');

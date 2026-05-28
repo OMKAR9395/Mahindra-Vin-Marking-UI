@@ -1,6 +1,7 @@
 {
   "name": "Mahindra VIN Marking",
   "short_name": "VIN Marking",
+  "id": "/app/",
   "theme_color": "#0057D9",
   "background_color": "#0057D9",
   "display": "standalone",
