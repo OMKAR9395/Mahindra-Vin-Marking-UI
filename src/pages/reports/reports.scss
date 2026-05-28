@@ -18,122 +18,160 @@
 }
 
 .hero {
-  border-radius: 18px;
-  padding: 12px 14px;
-  border: 1px solid #dbe6f7;
-  background: linear-gradient(125deg, #f8fbff 0%, #eef5ff 100%);
+  border-radius: 0;
+  padding: 6px 8px;
+  border: 1px solid rgba(18, 97, 106, 0.35);
+  background: #8fc5bd;
 }
 
-.hero-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-h1 {
-  margin: 0;
-  font-size: clamp(1.35rem, 1.2rem + 0.8vw, 2rem);
-  font-weight: 800;
-  letter-spacing: 0.01em;
-  color: #152845;
-}
-
-.hero-actions {
+.report-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
   align-items: center;
+  gap: 8px;
 }
 
-.range-field {
-  width: 165px;
+.report-panel {
+  min-height: 84px;
+  margin: 0;
+  padding: 7px 9px 8px;
+  border: 1px solid rgba(33, 105, 113, 0.65);
+  background: rgba(139, 196, 188, 0.85);
+  color: #17212d;
+  font-size: 13px;
+  font-weight: 700;
 }
 
-:host ::ng-deep .range-field .mat-mdc-form-field-subscript-wrapper {
-  display: none;
+.report-panel legend {
+  padding: 0 4px;
+  font-weight: 900;
+  color: #142536;
 }
 
-.manual-date-field {
-  display: inline-flex;
+.report-type-panel {
+  width: 190px;
+}
+
+.report-type-panel label,
+.shift-options label {
+  display: flex;
   align-items: center;
   gap: 6px;
-  height: 40px;
-  padding: 0 10px;
-  border: 1px solid #cfd9eb;
-  border-radius: 10px;
-  background: #ffffff;
+  line-height: 1.2;
 }
 
-.manual-date-field span {
-  font-size: 12px;
-  font-weight: 700;
-  color: #314e74;
+.report-type-panel label + label {
+  margin-top: 5px;
 }
 
-.manual-date-field input {
-  border: none;
-  outline: none;
-  background: transparent;
-  color: #223654;
+.report-panel input[type='radio'] {
+  width: 14px;
+  height: 14px;
+  accent-color: #194a8d;
+}
+
+.date-panel {
+  width: 430px;
+}
+
+.date-row,
+.vin-row,
+.select-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.date-row span,
+.vin-row span,
+.select-row span {
+  white-space: nowrap;
+}
+
+.date-row input,
+.vin-row input,
+.select-row select {
+  height: 22px;
+  min-width: 0;
+  border: 1px solid #6f8790;
+  background: #f3d0b8;
+  color: #182536;
   font-size: 13px;
-  font-weight: 600;
-  min-width: 126px;
+  font-weight: 700;
+  padding: 1px 6px;
+}
+
+.shift-options {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0 5px;
+}
+
+.vin-row {
+  grid-template-columns: 185px 1fr;
+  margin-bottom: 0;
+}
+
+.dashboard-panel {
+  width: 230px;
+}
+
+.report-button-group {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.report-action {
+  width: 102px;
+  min-height: 86px;
+  border: 2px solid #147f75;
+  background: #00a982;
+  color: #10262f;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.08;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+}
+
+.report-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.report-action:hover:not(:disabled) {
+  background: #08ba91;
 }
 
 .table-card {
-  border-radius: 18px;
-  padding: 12px;
+  border-radius: 0;
+  padding: 6px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
   min-height: 0;
-  border: 1px solid #dbe5f4;
-  box-shadow: 0 8px 18px rgba(20, 50, 88, 0.06);
-}
-
-.table-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-  font-size: 12px;
-  font-weight: 700;
-  color: #4a5f7f;
-}
-
-.range-chip {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: #e9f2ff;
-  color: #205493;
-}
-
-.meta-chips {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  border: 1px solid #637984;
+  background: #91c4be;
+  box-shadow: none;
 }
 
 .table-wrap {
   width: 100%;
-  min-height: 320px;
-  height: 540px;
-  max-height: 540px;
+  min-height: 360px;
+  height: 610px;
+  max-height: 610px;
   overflow-x: auto;
   overflow-y: scroll;
-  border: 1px solid #d9e4f5;
-  border-radius: 14px;
-  background: #ffffff;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+  border: 2px solid #efb37f;
+  border-radius: 0;
+  background: #b7d9dc;
+  box-shadow: inset 0 0 0 1px #6c8990;
   scrollbar-gutter: stable both-edges;
   scrollbar-width: thin;
-  scrollbar-color: rgba(67, 90, 125, 0.72) rgba(217, 228, 245, 0.9);
+  scrollbar-color: #e28561 #ffd1b0;
 }
 
 .table-wrap::-webkit-scrollbar {
@@ -142,18 +180,18 @@ h1 {
 }
 
 .table-wrap::-webkit-scrollbar-track {
-  background: rgba(217, 228, 245, 0.9);
-  border-radius: 999px;
+  background: #ffd1b0;
+  border-radius: 0;
 }
 
 .table-wrap::-webkit-scrollbar-thumb {
-  background: rgba(67, 90, 125, 0.72);
-  border-radius: 999px;
-  border: 2px solid rgba(255, 255, 255, 0.9);
+  background: #e28561;
+  border-radius: 0;
+  border: 1px solid #c66f52;
 }
 
 .table-wrap::-webkit-scrollbar-thumb:hover {
-  background: rgba(43, 62, 92, 0.85);
+  background: #cf6d50;
 }
 
 .shift-field {
@@ -162,50 +200,57 @@ h1 {
 
 .report-table {
   width: 100%;
-  min-width: 1700px;
+  min-width: 1450px;
   border-collapse: separate;
   border-spacing: 0;
+  table-layout: fixed;
+  background: #c8e5e7;
 }
 
 :host ::ng-deep .report-table .mat-mdc-header-row {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: #f2f7ff;
-  box-shadow: 0 1px 0 #dce7fa;
+  height: 32px;
+  background: #244aa0;
+  box-shadow: 0 1px 0 #12295f;
 }
 
 :host ::ng-deep .report-table .mat-mdc-header-cell {
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 900;
-  color: #26456e;
-  border-bottom: 1px solid #d9e4f7;
-  white-space: nowrap;
-  padding: 14px 14px !important;
+  font-size: 12px;
+  letter-spacing: 0;
+  font-weight: 800;
+  color: #081a39;
+  background: #244aa0;
+  border-right: 1px solid #8da0ca;
+  border-bottom: 1px solid #12295f;
+  white-space: normal;
+  padding: 3px 7px !important;
+  line-height: 1.05;
 }
 
 :host ::ng-deep .report-table .mat-mdc-cell {
-  font-size: 13px;
-  line-height: 1.25;
-  color: #1f2d44;
-  border-bottom: 1px solid #edf2fb;
-  padding: 12px 14px !important;
-  max-width: 220px;
+  font-size: 12px;
+  line-height: 1;
+  color: #18212b;
+  background: #c7e4e6;
+  border-right: 1px solid #8fafb4;
+  border-bottom: 1px solid #8fafb4;
+  padding: 2px 7px !important;
+  height: 22px;
+  max-width: none;
 }
 
 :host ::ng-deep .report-table .mat-mdc-row:nth-child(even) {
-  background: #f8fbff;
+  background: #bfdee1;
 }
 
-:host ::ng-deep .report-table .mat-mdc-row:hover {
-  background: #eef5ff;
+:host ::ng-deep .report-table .mat-mdc-row:nth-child(even) .mat-mdc-cell {
+  background: #bfdee1;
 }
 
-:host ::ng-deep .report-table .mat-mdc-cell,
-:host ::ng-deep .report-table .mat-mdc-header-cell {
-  border-right: 1px solid #eef3fc;
+:host ::ng-deep .report-table .mat-mdc-row:hover .mat-mdc-cell {
+  background: #d4eef0;
 }
 
 :host ::ng-deep .report-table .mat-mdc-cell:last-child,
@@ -218,7 +263,17 @@ h1 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: 400;
+  font-weight: 700;
+}
+
+:host ::ng-deep .report-table .row-indicator {
+  width: 66px;
+  min-width: 66px;
+  max-width: 66px;
+  background: linear-gradient(90deg, #0c3595, #0a7ed0) !important;
+  border-right: 1px solid #a2bdd0 !important;
+  border-bottom: 1px solid #86a8b5 !important;
+  padding: 0 !important;
 }
 
 :host ::ng-deep .report-table .col-sequenceID,
@@ -226,6 +281,23 @@ h1 {
 :host ::ng-deep .report-table .col-engraveCount {
   text-align: center;
 }
+
+:host ::ng-deep .report-table .col-sequenceID { width: 72px; }
+:host ::ng-deep .report-table .col-modelCode { width: 190px; }
+:host ::ng-deep .report-table .col-viN_NO { width: 175px; }
+:host ::ng-deep .report-table .col-serialNo { width: 90px; }
+:host ::ng-deep .report-table .col-country { width: 70px; }
+:host ::ng-deep .report-table .col-engineNo { width: 105px; }
+:host ::ng-deep .report-table .col-rollingDate { width: 85px; }
+:host ::ng-deep .report-table .col-shift { width: 50px; }
+:host ::ng-deep .report-table .col-colour { width: 88px; }
+:host ::ng-deep .report-table .col-vehical { width: 80px; }
+:host ::ng-deep .report-table .col-verient { width: 70px; }
+:host ::ng-deep .report-table .col-drive { width: 60px; }
+:host ::ng-deep .report-table .col-rhdlhd { width: 70px; }
+:host ::ng-deep .report-table .col-emission { width: 72px; }
+:host ::ng-deep .report-table .col-market { width: 78px; }
+:host ::ng-deep .report-table .col-enginE_TYPE { width: 78px; }
 
 :host ::ng-deep .report-table .col-sequenceID .cell-text,
 :host ::ng-deep .report-table .col-shift .cell-text,
@@ -246,19 +318,18 @@ h1 {
     padding: 12px;
   }
 
-  .hero-head {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-start;
-  }
-
-  .manual-date-field {
+  .report-type-panel,
+  .date-panel,
+  .dashboard-panel {
     width: 100%;
-    justify-content: space-between;
   }
 
-  h1 {
-    font-size: 24px;
+  .report-button-group {
+    width: 100%;
+  }
+
+  .report-action {
+    flex: 1;
   }
 
   .table-wrap {

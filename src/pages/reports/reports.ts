@@ -15,6 +15,7 @@ import {
 } from '../../services/production-data-report-api';
 
 type ShiftFilter = 'all' | 'A' | 'B' | 'C';
+type ReportType = 'production' | 'dashboard' | 'vin' | 'vinSearch';
 
 @Component({
   selector: 'app-reports',
@@ -48,9 +49,30 @@ export class Reports {
   filteredRecords: ProductionReportRecord[] = [];
   selectedDatePreset: 'none' | '1d' | '7d' | '1m' = 'none';
   selectedShift: ShiftFilter = 'all';
+  selectedReportType: ReportType = 'production';
+  selectedFyYear = '';
+  selectedMonth = 'January';
+  vinLast8 = '';
   fromDate = '';
   toDate = '';
   activeDateRangeLabel = '';
+  hasPreviewedReport = false;
+
+  readonly fyYears = ['2024-2025', '2025-2026', '2026-2027'];
+  readonly months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
 
   readonly displayedColumns: string[] = [
     'sequenceID',
@@ -70,12 +92,16 @@ export class Reports {
     'market',
     'enginE_TYPE',
   ];
+  readonly tableColumns = ['rowIndicator', ...this.displayedColumns];
 
   constructor() {
-    this.loadReports();
+    const today = new Date().toISOString().slice(0, 10);
+    this.fromDate = today;
+    this.toDate = today;
+    this.selectedFyYear = this.fyYears[1];
   }
 
-  loadReports(): void {
+  loadReports(downloadAfterLoad = false): void {
     this.startLoading('Fetching Production Report...', 'Loading records from server...');
     this.reportApi
       .getAll()
@@ -88,6 +114,9 @@ export class Reports {
               this.records = result.data;
               this.applyFilters();
               this.showSnack(result.message, result.success);
+              if (downloadAfterLoad) {
+                setTimeout(() => void this.downloadExcel(), 0);
+              }
             } catch {
               this.records = [];
               this.filteredRecords = [];
@@ -112,6 +141,36 @@ export class Reports {
           });
         },
       });
+  }
+
+  previewReport(): void {
+    this.hasPreviewedReport = true;
+    if (!this.ensureProductionReport()) {
+      return;
+    }
+    this.loadReports();
+  }
+
+  generateReport(): void {
+    this.hasPreviewedReport = true;
+    if (!this.ensureProductionReport()) {
+      return;
+    }
+
+    if (this.records.length) {
+      void this.downloadExcel();
+      return;
+    }
+
+    this.loadReports(true);
+  }
+
+  onReportTypeChange(type: ReportType): void {
+    this.selectedReportType = type;
+    this.hasPreviewedReport = false;
+    this.records = [];
+    this.filteredRecords = [];
+    this.cdr.markForCheck();
   }
 
   async downloadExcel(): Promise<void> {
@@ -195,6 +254,7 @@ export class Reports {
 
   onDatePresetChange(preset: 'none' | '1d' | '7d' | '1m'): void {
     this.selectedDatePreset = preset;
+    this.hidePreview();
     if (preset !== 'none') {
       this.fromDate = '';
       this.toDate = '';
@@ -202,20 +262,38 @@ export class Reports {
     this.applyFilters();
   }
 
+  onFyYearChange(value: string): void {
+    this.selectedFyYear = value;
+    this.hidePreview();
+  }
+
+  onMonthChange(value: string): void {
+    this.selectedMonth = value;
+    this.hidePreview();
+  }
+
+  onVinLast8Change(value: string): void {
+    this.vinLast8 = value.toUpperCase().slice(0, 8);
+    this.hidePreview();
+  }
+
   onShiftChange(shift: ShiftFilter): void {
     this.selectedShift = shift;
+    this.hidePreview();
     this.applyFilters();
   }
 
   onFromDateChange(value: string): void {
     this.fromDate = value;
     this.selectedDatePreset = 'none';
+    this.hidePreview();
     this.applyFilters();
   }
 
   onToDateChange(value: string): void {
     this.toDate = value;
     this.selectedDatePreset = 'none';
+    this.hidePreview();
     this.applyFilters();
   }
 
@@ -396,6 +474,24 @@ export class Reports {
     });
   }
 
+  private ensureProductionReport(): boolean {
+    if (this.selectedReportType === 'production') {
+      return true;
+    }
+
+    this.records = [];
+    this.filteredRecords = [];
+    this.hasPreviewedReport = false;
+    this.showSnack('This report option is available in the filter panel. API flow is currently set for Production Report.', false);
+    this.cdr.markForCheck();
+    return false;
+  }
+
+  private hidePreview(): void {
+    this.hasPreviewedReport = false;
+    this.cdr.markForCheck();
+  }
+
   private showReportLoader(mainMessage: string, subMessage: string): void {
     this.reportLoaderMainMessage = mainMessage;
     this.reportLoaderSubMessage = subMessage;
@@ -562,6 +658,7 @@ export class Reports {
   private applyFilters(): void {
     const list = [...this.records];
     const now = new Date();
+    const vinQuery = this.vinLast8.trim().toUpperCase();
     let fromDate: Date | null = null;
     let toDate: Date | null = null;
 
@@ -596,6 +693,10 @@ export class Reports {
 
     this.filteredRecords = list.filter((item) => {
       if (!this.matchesShift(item.shift)) {
+        return false;
+      }
+
+      if (vinQuery && !item.viN_NO.trim().toUpperCase().endsWith(vinQuery)) {
         return false;
       }
 

@@ -6,68 +6,120 @@
   />
 
   <mat-card class="hero">
-    <div class="hero-head">
-      <h1>Production Data Report</h1>
+    <div class="report-controls">
+      <fieldset class="report-panel report-type-panel">
+        <legend>Select Report :</legend>
+        <label>
+          <input
+            type="radio"
+            name="reportType"
+            value="production"
+            [checked]="selectedReportType === 'production'"
+            (change)="onReportTypeChange('production')"
+          />
+          <span>Production Report</span>
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="reportType"
+            value="dashboard"
+            [checked]="selectedReportType === 'dashboard'"
+            (change)="onReportTypeChange('dashboard')"
+          />
+          <span>Dashboard Report</span>
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="reportType"
+            value="vin"
+            [checked]="selectedReportType === 'vin'"
+            (change)="onReportTypeChange('vin')"
+          />
+          <span>VIN Report</span>
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="reportType"
+            value="vinSearch"
+            [checked]="selectedReportType === 'vinSearch'"
+            (change)="onReportTypeChange('vinSearch')"
+          />
+          <span>VIN Search Details</span>
+        </label>
+      </fieldset>
 
-      <div class="hero-actions">
-        <mat-form-field appearance="outline" class="range-field">
-          <mat-label>Date Filter</mat-label>
-          <mat-select [value]="selectedDatePreset" (valueChange)="onDatePresetChange($event)">
-            <mat-option value="none">No Filter</mat-option>
-            <mat-option value="1d">1 Day</mat-option>
-            <mat-option value="7d">7 Days</mat-option>
-            <mat-option value="1m">1 Month</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="range-field shift-field">
-          <mat-label>Shift</mat-label>
-          <mat-select [value]="selectedShift" (valueChange)="onShiftChange($event)">
-            <mat-option value="all">All</mat-option>
-            <mat-option value="A">A</mat-option>
-            <mat-option value="B">B</mat-option>
-            <mat-option value="C">C</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <label class="manual-date-field">
+      <fieldset class="report-panel date-panel">
+        <legend>Date Shift Filter:</legend>
+        <div class="date-row">
           <span>From</span>
           <input type="date" [value]="fromDate" (change)="onFromDateChange($any($event.target).value)" />
-        </label>
-
-        <label class="manual-date-field">
+        </div>
+        <div class="date-row">
           <span>To</span>
           <input type="date" [value]="toDate" (change)="onToDateChange($any($event.target).value)" />
-        </label>
+        </div>
+        <div class="shift-options" aria-label="Shift filter">
+          <label>
+            <input type="radio" name="shift" [checked]="selectedShift === 'all'" (change)="onShiftChange('all')" />
+            <span>ALL</span>
+          </label>
+          <label>
+            <input type="radio" name="shift" [checked]="selectedShift === 'A'" (change)="onShiftChange('A')" />
+            <span>A</span>
+          </label>
+          <label>
+            <input type="radio" name="shift" [checked]="selectedShift === 'B'" (change)="onShiftChange('B')" />
+            <span>B</span>
+          </label>
+          <label>
+            <input type="radio" name="shift" [checked]="selectedShift === 'C'" (change)="onShiftChange('C')" />
+            <span>C</span>
+          </label>
+        </div>
+        <div class="vin-row">
+          <span>Enter Last 8 Digit of VIN NO</span>
+          <input type="text" maxlength="8" [value]="vinLast8" (input)="onVinLast8Change($any($event.target).value)" />
+        </div>
+      </fieldset>
 
-        <button mat-stroked-button type="button" (click)="loadReports()" [disabled]="loading">
-          <mat-icon>refresh</mat-icon>
-          Refresh
+      <fieldset class="report-panel dashboard-panel">
+        <legend>Dashboard Report Filters:</legend>
+        <label class="select-row">
+          <span>FY Year</span>
+          <select [value]="selectedFyYear" (change)="onFyYearChange($any($event.target).value)">
+            <option *ngFor="let year of fyYears" [value]="year">{{ year }}</option>
+          </select>
+        </label>
+        <label class="select-row">
+          <span>Month</span>
+          <select [value]="selectedMonth" (change)="onMonthChange($any($event.target).value)">
+            <option *ngFor="let month of months" [value]="month">{{ month }}</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <div class="report-button-group">
+        <button class="report-action" type="button" (click)="previewReport()" [disabled]="loading">
+          PreView<br />Report
         </button>
-        <button mat-raised-button color="primary" type="button" (click)="downloadExcel()" [disabled]="loading || !filteredRecords.length">
-          <mat-icon>download</mat-icon>
-          Download Excel
+        <button class="report-action" type="button" (click)="generateReport()" [disabled]="loading">
+          Generate<br />Report
         </button>
       </div>
     </div>
-
   </mat-card>
 
-  <mat-card class="table-card">
-    <div class="table-meta">
-      <span>Total Records: {{ filteredRecords.length }}</span>
-      <div class="meta-chips">
-        <span *ngIf="selectedShift !== 'all'" class="range-chip">
-          Shift: {{ selectedShift }}
-        </span>
-        <span *ngIf="activeDateRangeLabel" class="range-chip">
-          {{ activeDateRangeLabel }}
-        </span>
-      </div>
-    </div>
-
+  <mat-card class="table-card" *ngIf="hasPreviewedReport">
     <div class="table-wrap" *ngIf="filteredRecords.length; else emptyState">
       <table mat-table [dataSource]="filteredRecords" class="report-table">
+        <ng-container matColumnDef="rowIndicator">
+          <th mat-header-cell *matHeaderCellDef class="row-indicator"></th>
+          <td mat-cell *matCellDef="let row" class="row-indicator"></td>
+        </ng-container>
+
         <ng-container *ngFor="let column of displayedColumns; trackBy: trackByColumn" [matColumnDef]="column">
           <th mat-header-cell *matHeaderCellDef [ngClass]="'col-' + column">
             {{ headerLabel(column) }}
@@ -77,8 +129,8 @@
           </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns; trackBy: trackBySequenceId"></tr>
+        <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: tableColumns; trackBy: trackBySequenceId"></tr>
       </table>
     </div>
 
