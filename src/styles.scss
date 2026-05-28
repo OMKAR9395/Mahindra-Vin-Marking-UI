@@ -52,12 +52,43 @@ body {
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
+  font-family: Roboto, Arial, Helvetica, sans-serif;
 
   // Reset the user agent margin.
   margin: 0;
   height: 100%;
 }
 /* You can add global styles to this file, and also import other style files */
+
+button,
+input,
+select,
+textarea,
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button {
+  font-family: Roboto, Arial, Helvetica, sans-serif;
+}
+
+mat-icon,
+.mat-icon,
+.material-icons {
+  font-family: 'Material Icons' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
 
 .snackbar-success,
 .success-snackbar {
@@ -73,8 +104,20 @@ body {
   --mat-snack-bar-button-color: #ffffff;
 }
 
+.cdk-global-overlay-wrapper:has(.mat-mdc-snack-bar-container) {
+  inset: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.cdk-global-overlay-wrapper:has(.mat-mdc-snack-bar-container) .cdk-overlay-pane {
+  top: 50% !important;
+  bottom: auto !important;
+  transform: translateY(-50%) !important;
+}
+
 .mat-mdc-snack-bar-container {
-  margin-top: 10px;
+  margin: 0;
   --mat-snack-bar-supporting-text-size: 24px;
   --mat-snack-bar-supporting-text-line-height: 1.35;
   --mat-snack-bar-supporting-text-weight: 500;

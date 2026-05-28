@@ -9,7 +9,8 @@
         "files": [
           "/index.html",
           "/*.css",
-          "/*.js"
+          "/*.js",
+          "/media/**"
         ]
       }
     },

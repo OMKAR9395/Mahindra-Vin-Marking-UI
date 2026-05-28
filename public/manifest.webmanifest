@@ -1,20 +1,20 @@
 {
   "name": "Mahindra VIN Marking",
   "short_name": "VIN Marking",
-  "theme_color": "#c41230",
-  "background_color": "#000000",
+  "theme_color": "#0057D9",
+  "background_color": "#0057D9",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
   "icons": [
     {
-      "src": "icons/icon-192x192-black.png",
+      "src": "icons/icon-192x192-blue.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-512x512-black.png",
+      "src": "icons/icon-512x512-blue.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
