@@ -81,7 +81,7 @@ private latestPreviewRequestId = 0;
   description: [''],
   description1: [''],
   market: [''],
-  country: [null],
+  country: [''],
   driveType: [''],
   trim: [''],
   flw: [''],
