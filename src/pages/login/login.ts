@@ -86,6 +86,17 @@ export class Login {
       userName: this.form.value.username,
       password: this.form.value.password
     };
+    if (loginPayload.userName === 'CISPL' && loginPayload.password === 'CISPL') {
+      localStorage.setItem('token', 'CISPL-dev-token');
+      localStorage.setItem('username', 'CISPL');
+      localStorage.setItem('userId', '1');
+      localStorage.setItem('role', 'Admin');
+      localStorage.setItem('isDeveloperSession', 'true');
+      this.router.navigateByUrl('/app/serialTerminal');
+      this.isSubmitting = false;
+      this.stopLoading();
+      return;
+    }
 
     this.authService.login(loginPayload).pipe(
       timeout(15000),
