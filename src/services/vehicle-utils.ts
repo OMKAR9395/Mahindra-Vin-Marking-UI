@@ -4,6 +4,10 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class VehicleUtils {
+  private readonly modelCountryCodeMap: Record<string, string> = {
+    '00': 'INDIA'
+  };
+
   // Validate VIN (must be 17 alphanumeric characters and start with MA1)
   isValidVIN(data: string): boolean {
     const cleaned = data.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
@@ -27,5 +31,23 @@ export class VehicleUtils {
     const letters = scannedData.match(/[A-Za-z]/g);
     if (!letters || letters.length < 2) return null;
     return letters.slice(-2).join('').toUpperCase();
+  }
+
+  getCountryCodeFromModelNumber(modelNumber: string): string | null {
+    const cleaned = (modelNumber || '').replace(/[^0-9]/g, '');
+    if (cleaned.length < 16) {
+      return null;
+    }
+
+    return cleaned.slice(14, 16);
+  }
+
+  getCountryNameFromModelNumber(modelNumber: string): string | null {
+    const countryCode = this.getCountryCodeFromModelNumber(modelNumber);
+    if (!countryCode) {
+      return null;
+    }
+
+    return this.modelCountryCodeMap[countryCode] || null;
   }
 }
