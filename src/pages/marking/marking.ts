@@ -68,6 +68,8 @@ private latestPreviewRequestId = 0;
   // Mapping of backend country names to image names
   countryImageMap: { [key: string]: string } = {
     '00': 'INDIA',
+    '06': '06',
+    '08': '08',
     'INDIA': 'INDIA',
     'USA': 'usa',
     'UK': 'uk',
@@ -556,10 +558,15 @@ private latestPreviewRequestId = 0;
 
   private loadCountryImage(countryName: string) {
     const normalizedCountryName = (countryName || '').toUpperCase().trim();
-    const countryCode = this.vehicleUtils.getCountryCodeFromModelNumber(this.form.get('modelNo')?.value || '');
-    const effectiveCountryName = (normalizedCountryName === '00' || countryCode === '00') ? 'INDIA' : normalizedCountryName;
+    const modelCountryCode = this.vehicleUtils.getCountryCodeFromModelNumber(this.form.get('modelNo')?.value || '');
+    const countryCode = (modelCountryCode || '').toUpperCase();
 
-    if (effectiveCountryName && effectiveCountryName !== 'INDIA') {
+    const imageNameFromCode = countryCode ? this.countryImageMap[countryCode] : null;
+    const imageNameFromCountry = this.countryImageMap[normalizedCountryName] || null;
+
+    const resolvedImageName = imageNameFromCode || imageNameFromCountry || null;
+
+    if (!resolvedImageName) {
       this.countryFlag = null;
       this.cdr.markForCheck();
       this.snackBar.open('This region number plate image cannot found', 'Close', {
@@ -570,9 +577,7 @@ private latestPreviewRequestId = 0;
       return;
     }
 
-    const imageName = this.countryImageMap[effectiveCountryName] || this.countryImageMap[normalizedCountryName] || effectiveCountryName || normalizedCountryName;
-    const extension = '.jpeg';
-    const imagePath = `assets/countries/${imageName}${extension}`;
+    const imagePath = `assets/countries/${resolvedImageName}.jpeg`;
     this.countryFlag = this.sanitizer.bypassSecurityTrustUrl(imagePath);
     this.cdr.markForCheck();
   }
