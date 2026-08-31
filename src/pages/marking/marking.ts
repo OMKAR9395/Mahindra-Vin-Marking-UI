@@ -67,6 +67,7 @@ private latestPreviewRequestId = 0;
 
   // Mapping of backend country names to image names
   countryImageMap: { [key: string]: string } = {
+    '00': 'INDIA',
     'INDIA': 'INDIA',
     'USA': 'usa',
     'UK': 'uk',
@@ -203,6 +204,11 @@ private latestPreviewRequestId = 0;
     modelNumber: string,
     combinedData?: { vinNumber: string; color: string | null; qrData: string }
   ) {
+    const countryCode = this.vehicleUtils.getCountryCodeFromModelNumber(modelNumber);
+    if (countryCode) {
+      this.form.patchValue({ country: countryCode });
+    }
+
     // Extract 2-letter code from model number
     const twoLetterCode = this.vehicleUtils.extractTwoLetterCode(modelNumber);
     if (!twoLetterCode) {
@@ -337,11 +343,13 @@ private latestPreviewRequestId = 0;
       next: (response: any) => {
         if (response.success && response.data) {
           const apiData = response.data;
+          const detectedCountry = apiData.country || this.vehicleUtils.getCountryCodeFromModelNumber(modelNo) || this.vehicleUtils.getCountryNameFromModelNumber(modelNo);
+
           this.form.patchValue({
             description: apiData.description,
             description1: apiData.description1,
             market: apiData.marketName,
-            country: apiData.country,
+            country: detectedCountry,
             driveType: apiData.driveType,
             trim: apiData.trim,
             seatCode: apiData.seatCode,
@@ -548,8 +556,10 @@ private latestPreviewRequestId = 0;
 
   private loadCountryImage(countryName: string) {
     const normalizedCountryName = (countryName || '').toUpperCase().trim();
+    const countryCode = this.vehicleUtils.getCountryCodeFromModelNumber(this.form.get('modelNo')?.value || '');
+    const effectiveCountryName = (normalizedCountryName === '00' || countryCode === '00') ? 'INDIA' : normalizedCountryName;
 
-    if (normalizedCountryName && normalizedCountryName !== 'INDIA') {
+    if (effectiveCountryName && effectiveCountryName !== 'INDIA') {
       this.countryFlag = null;
       this.cdr.markForCheck();
       this.snackBar.open('This region number plate image cannot found', 'Close', {
@@ -560,12 +570,8 @@ private latestPreviewRequestId = 0;
       return;
     }
 
-    // Get image name from mapping
-    const imageName = this.countryImageMap[normalizedCountryName] || normalizedCountryName;
-
-    // Check if image is jpeg or svg
-    // const extension = imageName === 'INDIA' ? '.jpeg' : '.svg';
-    const extension ='.jpeg';
+    const imageName = this.countryImageMap[effectiveCountryName] || this.countryImageMap[normalizedCountryName] || effectiveCountryName || normalizedCountryName;
+    const extension = '.jpeg';
     const imagePath = `assets/countries/${imageName}${extension}`;
     this.countryFlag = this.sanitizer.bypassSecurityTrustUrl(imagePath);
     this.cdr.markForCheck();
