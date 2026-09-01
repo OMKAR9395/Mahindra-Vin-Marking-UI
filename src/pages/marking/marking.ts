@@ -48,6 +48,7 @@ private latestPreviewRequestId = 0;
   @ViewChild('nameplatCanvas', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
 
   countryFlag: SafeUrl | null = null;
+  currentPlateType: string | null = null;
   labelPreviewImage: SafeUrl | null = null;
   scannedQrCode: string = '';
   private isFetchingImage = false; // Flag to prevent duplicate image API calls
@@ -115,6 +116,7 @@ private latestPreviewRequestId = 0;
           this.loadCountryImage(countryName);
         } else {
           this.countryFlag = null;
+          this.currentPlateType = null;
         }
       });
 
@@ -354,6 +356,10 @@ private latestPreviewRequestId = 0;
             country: detectedCountry,
             driveType: apiData.driveType,
             trim: apiData.trim,
+            flw: apiData.flw,
+            gvw: apiData.gvw,
+            faw: apiData.faw,
+            raw: apiData.raw,
             seatCode: apiData.seatCode,
             color: apiData.colorCode,
             engine: apiData.engineType,
@@ -441,43 +447,76 @@ private latestPreviewRequestId = 0;
     });
   }
 
+  getPlateVin(vin: string | null | undefined): string {
+    if (!vin) return '';
+    return vin.toString().trim().replace(/^MA1/i, '');
+  }
+
   onEngrave() {
     const formData = this.form.getRawValue();
     const modelNo = (formData.modelNo || '').toString().trim();
-    const vinNo = (formData.vinNo || '').toString().trim();
+    const rawVinNo = (formData.vinNo || '').toString().trim();
     const engineSrNo = (formData.engineSrNo || '').toString().trim();
+    const description1 = (formData.description1 || '').toString().trim();
+    const flw = (formData.flw || '').toString().trim();
+    const gvw = (formData.gvw || '').toString().trim();
+    const faw = (formData.faw || '').toString().trim();
+    const raw = (formData.raw || '').toString().trim();
 
-    if (!modelNo || !vinNo || !engineSrNo) {
-      this.snackBar.open('Model No, VIN No and Engine Sr No are required for engrave', 'Close', {
-        duration: 5000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center'
-      });
-      return;
+    const countryCode = this.vehicleUtils.getCountryCodeFromModelNumber(modelNo);
+    const isPlate06or08 = this.currentPlateType === '06' || this.currentPlateType === '08' || countryCode === '06' || countryCode === '08';
+    const vinNoForEngrave = isPlate06or08 ? rawVinNo.replace(/^MA1/i, '') : rawVinNo;
+
+    if (isPlate06or08) {
+      if (!modelNo || !rawVinNo) {
+        this.snackBar.open('Model No and VIN No are required for engrave', 'Close', {
+          duration: 5000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center'
+        });
+        return;
+      }
+    } else {
+      if (!modelNo || !rawVinNo || !engineSrNo) {
+        this.snackBar.open('Model No, VIN No and Engine Sr No are required for engrave', 'Close', {
+          duration: 5000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center'
+        });
+        return;
+      }
     }
 
+    const parameters = isPlate06or08
+      ? [description1, vinNoForEngrave, flw, gvw, faw, raw, modelNo]
+      : [modelNo, rawVinNo, engineSrNo];
+
     const engravePayload = {
-      parameters: [modelNo, vinNo, engineSrNo],
+      parameters,
       isReengrave: false
     };
 
     const printPayload = {
       modelNo,
-      vinNo,
+      vinNo: rawVinNo,
       engineSrNo,
       description: formData.description,
-      qr: this.scannedQrCode || vinNo
+      qr: this.scannedQrCode || rawVinNo
     };
     const productionAddPayload = {
       modelCode: modelNo,
-      viN_NO: vinNo,
+      viN_NO: rawVinNo,
       engineNo: engineSrNo
     };
+
+    const displaySubtitle = isPlate06or08
+      ? `${description1} | ${vinNoForEngrave} | ${flw} | ${gvw} | ${faw} | ${raw} | ${modelNo}`
+      : `${modelNo} | ${rawVinNo} | ${engineSrNo}`;
 
     this.showEngraveLoader(
       'Engraving Data',
       'Sending parameters to engraving machine...',
-      `${modelNo} | ${vinNo} | ${engineSrNo}`
+      displaySubtitle
     );
 
     this.engraveService.runWithParameter(engravePayload).pipe(
@@ -568,6 +607,7 @@ private latestPreviewRequestId = 0;
 
     if (!resolvedImageName) {
       this.countryFlag = null;
+      this.currentPlateType = null;
       this.cdr.markForCheck();
       this.snackBar.open('This region number plate image cannot found', 'Close', {
         duration: 5000,
@@ -577,6 +617,7 @@ private latestPreviewRequestId = 0;
       return;
     }
 
+    this.currentPlateType = resolvedImageName;
     const imagePath = `assets/countries/${resolvedImageName}.jpeg`;
     this.countryFlag = this.sanitizer.bypassSecurityTrustUrl(imagePath);
     this.cdr.markForCheck();
@@ -637,6 +678,7 @@ private latestPreviewRequestId = 0;
     }
     this.labelPreviewImage = null;
     this.countryFlag = null;
+    this.currentPlateType = null;
 
     this.form.reset({
       country: null,

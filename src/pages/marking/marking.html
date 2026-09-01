@@ -140,21 +140,54 @@
   <div class="right-section">
     <div class="display-box large-box">
       <div class="country-image-container">
-        <div class="image-wrapper">
+        <div class="image-wrapper" [ngClass]="{'plate-06-mode': currentPlateType === '06', 'plate-08-mode': currentPlateType === '08'}">
           <img *ngIf="countryFlag" [src]="countryFlag" alt="Country Image" class="country-image">
 
-          <!-- Overlay text fields positioned over the plate image. They bind to form values. -->
-          <div class="overlay model-overlay" *ngIf="countryFlag && form.get('modelNo')?.value">
-            {{ form.get('modelNo')?.value }}
-          </div>
+          <!-- 06 and 08 Detailed Plate Layout -->
+          <ng-container *ngIf="currentPlateType === '06' || currentPlateType === '08'">
+            <div class="overlay-detail plate-description-overlay" *ngIf="countryFlag && form.get('description1')?.value">
+              {{ form.get('description1')?.value }}
+            </div>
 
-          <div class="overlay vin-overlay" *ngIf="countryFlag && form.get('vinNo')?.value">
-            {{ form.get('vinNo')?.value }}
-          </div>
+            <div class="overlay-detail plate-vin-overlay" *ngIf="countryFlag && form.get('vinNo')?.value">
+              {{ getPlateVin(form.get('vinNo')?.value) }}
+            </div>
 
-          <div class="overlay engine-overlay" *ngIf="countryFlag && form.get('engineSrNo')?.value">
-            {{ form.get('engineSrNo')?.value }}
-          </div>
+            <div class="overlay-detail plate-flw-overlay" *ngIf="countryFlag && form.get('flw')?.value">
+              {{ form.get('flw')?.value }}
+            </div>
+
+            <div class="overlay-detail plate-gvw-overlay" *ngIf="countryFlag && form.get('gvw')?.value">
+              {{ form.get('gvw')?.value }}
+            </div>
+
+            <div class="overlay-detail plate-faw-overlay" *ngIf="countryFlag && form.get('faw')?.value">
+              {{ form.get('faw')?.value }}
+            </div>
+
+            <div class="overlay-detail plate-raw-overlay" *ngIf="countryFlag && form.get('raw')?.value">
+              {{ form.get('raw')?.value }}
+            </div>
+
+            <div class="overlay-detail plate-model-overlay" *ngIf="countryFlag && form.get('modelNo')?.value">
+              {{ form.get('modelNo')?.value }}
+            </div>
+          </ng-container>
+
+          <!-- Default / INDIA (00) Plate Layout - Exact original structure -->
+          <ng-container *ngIf="currentPlateType !== '06' && currentPlateType !== '08'">
+            <div class="overlay model-overlay" *ngIf="countryFlag && form.get('modelNo')?.value">
+              {{ form.get('modelNo')?.value }}
+            </div>
+
+            <div class="overlay vin-overlay" *ngIf="countryFlag && form.get('vinNo')?.value">
+              {{ form.get('vinNo')?.value }}
+            </div>
+
+            <div class="overlay engine-overlay" *ngIf="countryFlag && form.get('engineSrNo')?.value">
+              {{ form.get('engineSrNo')?.value }}
+            </div>
+          </ng-container>
 
           <p *ngIf="!countryFlag" class="fallback-text">Please scan QR code to process VIN marking system</p>
         </div>
@@ -177,4 +210,3 @@
     </div>
   </div>
 </div>
-
